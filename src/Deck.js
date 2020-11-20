@@ -16,37 +16,46 @@ const Deck = () => {
         getDeck() //call function
     }, [setDeck])//stipulate getData should only be called when setDeck is changed
 
-    useEffect(() => {
-        async function getCard() {
-            try {
-                let draw = await axios.get(`${BASEURL}/${deck.deck_id}/draw`);
-                if(draw.data.remaining === 0) {
-                    throw new Error("all out!");
-                }
 
-                const card = draw.data.cards[0];
-                setDrawn(c => [
-                    ...c,
-                    {
-                        id: card.code,
-                        name: `${card.suit} ${card.value}`
-                    }
-                ]);
 
-            } catch (error) {
-                alert(error);
+    async function getCard() {
+        try {
+            let draw = await axios.get(`${BASEURL}/${deck.deck_id}/draw`);
+            if(draw.data.remaining === 0) {
+                throw new Error("all out!");
             }
-        }
-    }, [deck]);
+            const card = draw.data.cards[0];
+            console.log(card);
 
-    const cards = drawn.map(c => (
-        <Card key={c.id} name={c.name}/>
+            setDrawn(d => {
+                return [
+                ...d,
+                {
+                    id: card.code,
+                    suit: card.suit,
+                    value: card.value
+                }
+            ]});
+        } catch (error) {
+            alert(error);
+        }
+    }
+
+    async function drawCard() {
+        console.log(drawn);
+        await getCard();
+    }
+
+    const cards = drawn.map(c => ( //cards is a visual represenation of the drawn cards. Use Card components to create an array and store em in the variable.
+        <Card key={c.id} suit={c.suit} value={c.value} />
     ));
 
     return(
         <ul>
-        <button className="Deck-gimme" onClick={drawCard}>Draw a Card </button>
-                {cards}
+            <button onClick={drawCard}>Draw a card</button>
+            {cards}
         </ul>
     )
 }
+
+export default Deck;
