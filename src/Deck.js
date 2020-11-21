@@ -8,15 +8,18 @@ const Deck = () => {
     const [deck, setDeck] = useState(null); //set's deck in state. each deck has a unique id.
     const [drawn, setDrawn] = useState([]);//an array of cards that have be drawn
 
+    const [auto, setAuto] = useState(false);
+    const timerRef = useRef(null);
+
     useEffect(() => {
         async function getDeck() {//async func created
             let deck = await axios.get(`${BASEURL}/new/shuffle`);
             setDeck(deck.data);//sets deck state to deck res data
         }
         getDeck() //call function
-    }, [setDeck])//stipulate getData should only be called when setDeck is changed
+    }, [setDeck])//stipulate getData should only be called when setDeck is changed. remember, set deck is called upon initial load. (All states are).
 
-
+//ok, so not too crazy. we literally just need to wrap this thing up in a timer with some conditionals to check wether or not auto is on.
 
     async function getCard() {
         try {
@@ -42,7 +45,6 @@ const Deck = () => {
     }
 
     async function drawCard() {
-        console.log(drawn);
         await getCard();
     }
 
